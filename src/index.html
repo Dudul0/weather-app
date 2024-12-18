@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Detector Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video, img {
+      width: 100%;
+      max-width: 600px;
+      margin-top: 20px;
+      border: 1px solid #ccc;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Barcode Detector</h1>
+  
+  <!-- Message for support -->
+  <p id="support-message"></p>
+
+  <!-- Video element for live camera feed -->
+  <video id="video" autoplay playsinline></video>
+  
+  <!-- Static image element -->
+  <img id="image" src="" alt="Captured image" style="display:none;" />
+
+  <!-- Controls -->
+  <div>
+    <button id="start-camera">Start Camera</button>
+    <button id="capture-image">Capture Image</button>
+  </div>
+
+  <!-- Display result -->
+  <p id="result"></p>
+
+  <!-- Inline JavaScript -->
+  <script>
+    // Your JavaScript code here
+    if (!("BarcodeDetector" in globalThis)) {
+      document.getElementById("support-message").textContent = "Barcode Detector is not supported by this browser.";
+    } else {
+      document.getElementById("support-message").textContent = "Barcode Detector supported!";
+  
+      const barcodeDetector = new BarcodeDetector({
+        formats: ["code_39", "codabar", "ean_13"],
+      });
+  
+      BarcodeDetector.getSupportedFormats().then((supportedFormats) => {
+        console.log("Supported Formats:", supportedFormats);
+      });
+  
+      document.getElementById("start-camera").addEventListener("click", async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+          document.getElementById("video").srcObject = stream;
+        } catch (error) {
+          console.error("Camera access error:", error);
+        }
+      });
+  
+      document.getElementById("capture-image").addEventListener("click", () => {
+        const video = document.getElementById("video");
+        const canvas = document.createElement("canvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+  
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+        const imageData = canvas.toDataURL("image/png");
+        document.getElementById("image").src = imageData;
+        document.getElementById("image").style.display = "block";
+  
+        barcodeDetector
+          .detect(canvas)
+          .then((barcodes) => {
+            if (barcodes.length > 0) {
+              document.getElementById("result").textContent = `Barcode found: ${barcodes[0].rawValue}`;
+            } else {
+              document.getElementById("result").textContent = "No barcode detected.";
+            }
+          })
+          .catch((err) => {
+            console.error("Barcode detection error:", err);
+          });
+      });
+    }
+  </script>
+</html>
