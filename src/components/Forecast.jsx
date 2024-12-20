@@ -74,7 +74,7 @@ export default function Forecast({ forecastData }) {
     <section className="container mx-auto px-4 py-6">
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-lg sm:text-xl md:text-2xl font-bold">
-          <span className="hidden md:inline">{t.appName}</span>
+          <span className="inline">{t.appName}</span>
         </h1>
         <button
           onClick={toggleLanguage}

@@ -16,7 +16,7 @@ export default function Header({ getLL }) {
   };
 
   return (
-    <header className="bg-gray-500 text-white py-3 px-4 flex items-center justify-between md:py-4 xl:px-8 2xl:py-5">
+    <header className="bg-gray-500 text-white py-3 px-4 flex items-center justify-center md:py-4 xl:px-8 2xl:py-5">
       <div className="flex items-center gap-3">
         <form onSubmit={handleSubmit} className="flex items-center gap-3">
           <input
